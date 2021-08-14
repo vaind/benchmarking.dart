@@ -6,9 +6,11 @@ import 'printer.dart';
 
 /// Base class for benchmarks sync and async benchmarks
 abstract class Benchmark {
-  final String _name;
+  late final String _name;
 
-  Benchmark(this._name);
+  Benchmark._(String? name) {
+    _name = name ?? runtimeType.toString();
+  }
 }
 
 class BenchmarkSettings {
@@ -68,7 +70,7 @@ class BenchmarkResult {
 
 /// Base class for a synchronous code.
 abstract class SyncBenchmark extends Benchmark {
-  SyncBenchmark(String name) : super(name);
+  SyncBenchmark([String? name]) : super._(name);
 
   // Override this with the benchmark code.
   void run();
@@ -113,7 +115,7 @@ abstract class SyncBenchmark extends Benchmark {
 
 /// Base class for asynchronous code.
 abstract class AsyncBenchmark extends Benchmark {
-  AsyncBenchmark(String name) : super(name);
+  AsyncBenchmark([String? name]) : super._(name);
 
   // Override this with the benchmark code.
   Future<void> run();

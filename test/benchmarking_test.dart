@@ -40,8 +40,6 @@ void main() {
 }
 
 class TestBenchmarkSync extends SyncBenchmark with BenchmarkTester {
-  TestBenchmarkSync() : super('test');
-
   @override
   void setup() async => _setup();
 
@@ -53,8 +51,6 @@ class TestBenchmarkSync extends SyncBenchmark with BenchmarkTester {
 }
 
 class TestBenchmarkAsync extends AsyncBenchmark with BenchmarkTester {
-  TestBenchmarkAsync() : super('test');
-
   @override
   Future<void> setup() async => _setup();
 
