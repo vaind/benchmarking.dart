@@ -1,12 +1,30 @@
 import 'dart:math';
 
+/// Console printer for benchmark results.
 class Printer {
+  const Printer();
+
   void blank() => print('');
 
-  void plain(dynamic value) => print(value);
+  void plain(dynamic value) => print(autoTransform(value));
 
-  void colored(Color color, dynamic value) =>
-      color == Color.none ? print(value) : print('$color$value${Color._reset}');
+  void labeled(String label, dynamic value, {Color color = Color.none}) {
+    label = lpad(label, 20) + ': ';
+    value = autoTransform(value);
+    return color == Color.none
+        ? print('$label$value')
+        : print('$label$color$value${Color._reset}');
+  }
+
+  void colored(Color color, dynamic value) {
+    value = autoTransform(value);
+    return color == Color.none
+        ? print(value)
+        : print('$color$value${Color._reset}');
+  }
+
+  static String autoTransform(dynamic value) =>
+      value is num ? format(value) : value.toString();
 
   /// Simple number formatting
   /// * the smaller the number, the more decimal places it has.
@@ -16,31 +34,43 @@ class Printer {
       int? decimalPoints,
       String suffix = '   ',
       int lPadLength = 10}) {
-    assert(number >= 0);
-    decimalPoints ??=
-        number is int ? 0 : max(0, 5 - number.toStringAsFixed(0).length);
-    var str = number.toStringAsFixed(decimalPoints);
+    late String str;
 
-    if (number >= 1000) {
-      // add thousands separators, efficiency doesn't matter here...
-      final digitsReversed = str.split('').reversed.toList(growable: false);
-      str = '';
-      for (var i = 0; i < digitsReversed.length; i++) {
-        if (i > 0 && i % 3 == 0) str = '$thousandsSeparator$str';
-        str = '${digitsReversed[i]}$str';
+    if (number.isInfinite) {
+      str = number.toString();
+    } else {
+      assert(number >= 0);
+      decimalPoints ??=
+          number is int ? 0 : max(0, 5 - number.toStringAsFixed(0).length);
+      str = number.toStringAsFixed(decimalPoints);
+
+      if (number >= 1000 && thousandsSeparator.isNotEmpty) {
+        // add thousands separators, efficiency doesn't matter here...
+        final parts = str.split('.');
+        final digitsReversed =
+            parts[0].split('').reversed.toList(growable: false);
+        str = parts.length == 1 ? '' : '.${parts[1]}';
+        for (var i = 0; i < digitsReversed.length; i++) {
+          if (i > 0 && i % 3 == 0) str = '$thousandsSeparator$str';
+          str = '${digitsReversed[i]}$str';
+        }
       }
+
+      str += suffix;
     }
 
-    str += suffix;
+    return lpad(str, lPadLength);
+  }
 
-    while (str.length < lPadLength) {
-      str = ' $str';
+  static String lpad(String text, int length) {
+    while (text.length < length) {
+      text = ' $text';
     }
-
-    return str;
+    return text;
   }
 }
 
+/// Console color modifiers.
 class Color {
   final String _value;
   const Color._(this._value);

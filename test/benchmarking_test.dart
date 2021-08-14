@@ -96,6 +96,6 @@ mixin BenchmarkTester {
     expect(result.averageRunTime.inMicroseconds, lessThan(11 * 1000));
     expect(result.runsPerSecond, greaterThan(90));
     expect(result.runsPerSecond, lessThan(100));
-    bench.report(result);
+    result.report();
   }
 }

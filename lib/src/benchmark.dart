@@ -7,27 +7,8 @@ import 'printer.dart';
 /// Base class for benchmarks sync and async benchmarks
 abstract class Benchmark {
   final String _name;
-  final _output = Printer();
 
   Benchmark(this._name);
-
-  void _report(BenchmarkResult result) {
-    final msFractional = (Duration d) => Printer.format(
-        d.inMicroseconds / Duration.microsecondsPerMillisecond,
-        suffix: ' ms');
-    _output
-      ..blank()
-      ..colored(Color.blue, _name)
-      ..plain('   total runs: ${Printer.format(result.runs)}')
-      ..colored(
-          (result.totalRunTime.inMilliseconds >
-                  result.settings.minimumRunTime.inMilliseconds * 1.25)
-              ? Color.yellow
-              : Color.none,
-          '   total time: ${msFractional(result.totalRunTime)}')
-      ..plain('  average run: ${msFractional(result.averageRunTime)}')
-      ..plain('  runs/second: ${Printer.format(result.runsPerSecond)}');
-  }
 }
 
 class BenchmarkSettings {
@@ -43,17 +24,46 @@ class BenchmarkSettings {
 }
 
 class BenchmarkResult {
+  final Benchmark _benchmark;
   final int runs;
   final Duration totalRunTime;
   final BenchmarkSettings settings;
 
-  BenchmarkResult._(this.settings, this.runs, this.totalRunTime);
+  BenchmarkResult._(
+      this._benchmark, this.settings, this.runs, this.totalRunTime);
 
   Duration get averageRunTime =>
       Duration(microseconds: totalRunTime.inMicroseconds ~/ runs);
 
   double get runsPerSecond =>
       Duration.microsecondsPerSecond / averageRunTime.inMicroseconds;
+
+  void report({int? units, Printer output = const Printer()}) {
+    final msFractional = (Duration d) => Printer.format(
+        d.inMicroseconds / Duration.microsecondsPerMillisecond,
+        suffix: ' ms');
+    output
+      ..blank()
+      ..colored(Color.blue, _benchmark._name)
+      ..labeled('total runs', runs)
+      ..labeled('total time', msFractional(totalRunTime),
+          color: (totalRunTime.inMilliseconds >
+                  settings.minimumRunTime.inMilliseconds * 1.25)
+              ? Color.yellow
+              : Color.none)
+      ..labeled('average run', msFractional(averageRunTime))
+      ..labeled('runs/second', runsPerSecond);
+    if (units != null) {
+      output
+        ..labeled('units', units)
+        ..labeled('units/second', runsPerSecond)
+        ..labeled('time per unit',
+            Printer.format(microsecondsPerUnit(units), suffix: ' μs'));
+    }
+  }
+
+  double microsecondsPerUnit(int units) =>
+      averageRunTime.inMicroseconds / units;
 }
 
 /// Base class for a synchronous code.
@@ -68,9 +78,6 @@ abstract class SyncBenchmark extends Benchmark {
 
   /// Clean up after the benchmark has finished.
   void teardown() => {};
-
-  @nonVirtual
-  void report([BenchmarkResult? result]) => _report(result ?? measure());
 
   // Measures the [run()] function performance.
   @nonVirtual
@@ -87,7 +94,7 @@ abstract class SyncBenchmark extends Benchmark {
   }
 
   /// Runs [fn] for at least [minimumMicroseconds].
-  static BenchmarkResult _measureUntil(
+  BenchmarkResult _measureUntil(
       BenchmarkSettings settings, Function() fn, int minimumMicroseconds) {
     var runs = 0;
     var totalUs = 0;
@@ -99,7 +106,8 @@ abstract class SyncBenchmark extends Benchmark {
       totalUs = watch.elapsedMicroseconds;
       runs++;
     }
-    return BenchmarkResult._(settings, runs, Duration(microseconds: totalUs));
+    return BenchmarkResult._(
+        this, settings, runs, Duration(microseconds: totalUs));
   }
 }
 
@@ -116,10 +124,6 @@ abstract class AsyncBenchmark extends Benchmark {
   /// Clean up after the benchmark has finished.
   Future<void> teardown() async => {};
 
-  @nonVirtual
-  Future<void> report([BenchmarkResult? result]) async =>
-      _report(result ?? await measure());
-
   // Measures the [run()] function performance.
   @nonVirtual
   Future<BenchmarkResult> measure([BenchmarkSettings? settings]) async {
@@ -135,7 +139,7 @@ abstract class AsyncBenchmark extends Benchmark {
   }
 
   /// Runs [fn] for at least [minimumMicroseconds].
-  static Future<BenchmarkResult> _measureUntil(BenchmarkSettings settings,
+  Future<BenchmarkResult> _measureUntil(BenchmarkSettings settings,
       Future Function() fn, int minimumMicroseconds) async {
     var runs = 0;
     var totalUs = 0;
@@ -147,6 +151,7 @@ abstract class AsyncBenchmark extends Benchmark {
       totalUs = watch.elapsedMicroseconds;
       runs++;
     }
-    return BenchmarkResult._(settings, runs, Duration(microseconds: totalUs));
+    return BenchmarkResult._(
+        this, settings, runs, Duration(microseconds: totalUs));
   }
 }
