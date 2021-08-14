@@ -1,6 +1,6 @@
 name: benchmarking
-description: Provides tools to run benchmarks.
-version: 0.1.0
+description: Tools to run benchmarks with ease and control.
+version: 0.5.0
 repository: https://github.com/vaind/benchmarking.dart
 
 environment:
