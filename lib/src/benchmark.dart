@@ -41,26 +41,25 @@ class BenchmarkResult {
       Duration.microsecondsPerSecond / averageRunTime.inMicroseconds;
 
   void report({int? units, Printer output = const Printer()}) {
-    final msFractional = (Duration d) => Printer.format(
-        d.inMicroseconds / Duration.microsecondsPerMillisecond,
-        suffix: ' ms');
     output
       ..blank()
       ..colored(Color.blue, _benchmark._name)
       ..labeled('total runs', runs)
-      ..labeled('total time', msFractional(totalRunTime),
+      ..labeled(
+          'total time', Printer.formatMicroseconds(totalRunTime.inMicroseconds),
           color: (totalRunTime.inMilliseconds >
                   settings.minimumRunTime.inMilliseconds * 1.25)
               ? Color.yellow
               : Color.none)
-      ..labeled('average run', msFractional(averageRunTime))
+      ..labeled('average run',
+          Printer.formatMicroseconds(averageRunTime.inMicroseconds))
       ..labeled('runs/second', runsPerSecond);
     if (units != null) {
       output
         ..labeled('units', units)
         ..labeled('units/second', runsPerSecond)
         ..labeled('time per unit',
-            Printer.format(microsecondsPerUnit(units), suffix: ' μs'));
+            Printer.formatMicroseconds(microsecondsPerUnit(units)));
     }
   }
 

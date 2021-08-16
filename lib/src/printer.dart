@@ -33,34 +33,37 @@ class Printer {
       {String thousandsSeparator = ' ',
       int? decimalPoints,
       String suffix = '   ',
-      int lPadLength = 10}) {
+      int lPadLength = 8}) {
     late String str;
 
     if (number.isInfinite) {
-      str = number.toString();
-    } else {
-      assert(number >= 0);
-      decimalPoints ??=
-          number is int ? 0 : max(0, 5 - number.toStringAsFixed(0).length);
-      str = number.toStringAsFixed(decimalPoints);
+      return lpad(number.toString(), lPadLength);
+    }
+    assert(number >= 0);
+    decimalPoints ??=
+        number is int ? 0 : max(0, 5 - number.toStringAsFixed(0).length);
+    str = number.toStringAsFixed(decimalPoints);
 
-      if (number >= 1000 && thousandsSeparator.isNotEmpty) {
-        // add thousands separators, efficiency doesn't matter here...
-        final parts = str.split('.');
-        final digitsReversed =
-            parts[0].split('').reversed.toList(growable: false);
-        str = parts.length == 1 ? '' : '.${parts[1]}';
-        for (var i = 0; i < digitsReversed.length; i++) {
-          if (i > 0 && i % 3 == 0) str = '$thousandsSeparator$str';
-          str = '${digitsReversed[i]}$str';
-        }
+    if (number >= 1000 && thousandsSeparator.isNotEmpty) {
+      // add thousands separators, efficiency doesn't matter here...
+      final parts = str.split('.');
+      final digitsReversed =
+          parts[0].split('').reversed.toList(growable: false);
+      str = parts.length == 1 ? '' : '.${parts[1]}';
+      for (var i = 0; i < digitsReversed.length; i++) {
+        if (i > 0 && i % 3 == 0) str = '$thousandsSeparator$str';
+        str = '${digitsReversed[i]}$str';
       }
-
-      str += suffix;
     }
 
-    return lpad(str, lPadLength);
+    return lpad(str, lPadLength) + suffix;
   }
+
+  static String formatMicroseconds(num number) => number < 1000
+      ? format(number, suffix: ' μs')
+      : number < 1000000
+          ? format(number / 1000, suffix: ' ms')
+          : format(number / 1000000, suffix: '  s');
 
   static String lpad(String text, int length) {
     while (text.length < length) {
