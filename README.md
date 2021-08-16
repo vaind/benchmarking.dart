@@ -1,10 +1,11 @@
 # Benchmarking
 
-Provides tools to measure performance of your code. You can run simple micro-benchmarks while picking the best approach for the function you're just writing, or benchmark more complex code with greater control on setup and teardown.
+This package provides tools to measure performance of your code. Some features:
 
-There's first-class support for both synchronous as well as **`async`** code so that you get the most accurate measurements at all times.
-
-You can also choose from two approaches to define your benchmarks - do it via a class-based interface, like with `package:benchmark_harness` or a functional one, like writing tests with `package:test`.
+* first-class support both **sync** and **async** code
+* a class-based interface (like `package:benchmark_harness`)
+* a functional interface (like `package:test`)
+* handles simple micro-benchmarks as well as more complex ones (with setup and teardown functions)
 
 ## Writing your own bechmarks
 
@@ -36,20 +37,20 @@ A result of running the benchmark would look something like:
 $ dart run example/benchmarking.dart
 
 Map[k]
-          total runs:   8 801
-          total time: 2 000.1 ms
-         average run:  0.2270 ms
-         runs/second: 4 405.3
-               units:  10 000
-        units/second: 4 405.3
-       time per unit:  0.0227 μs
+          total runs:    8 384
+          total time:   2.0002  s
+         average run:      238 μs
+         runs/second:  4 201.7
+               units:   10 000
+        units/second:  4 201.7
+       time per unit:   0.0238 μs
 
 HashMap[k]
-          total runs:  18 839
-          total time: 2 000.0 ms
-         average run:  0.1060 ms
-         runs/second: 9 434.0
-               units:  10 000
-        units/second: 9 434.0
-       time per unit:  0.0106 μs
+          total runs:   16 459
+          total time:   2.0000  s
+         average run:      121 μs
+         runs/second:  8 264.5
+               units:   10 000
+        units/second:  8 264.5
+       time per unit:   0.0121 μs
 ```
