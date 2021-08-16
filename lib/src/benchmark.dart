@@ -79,7 +79,7 @@ abstract class SyncBenchmark extends Benchmark {
   void setup() {}
 
   /// Clean up after the benchmark has finished.
-  void teardown() => {};
+  void teardown() {}
 
   // Measures the [run()] function performance.
   @nonVirtual
@@ -124,20 +124,24 @@ abstract class AsyncBenchmark extends Benchmark {
   Future<void> setup() async {}
 
   /// Clean up after the benchmark has finished.
-  Future<void> teardown() async => {};
+  Future<void> teardown() async {}
 
   // Measures the [run()] function performance.
   @nonVirtual
   Future<BenchmarkResult> measure([BenchmarkSettings? settings]) async {
     settings ??= BenchmarkSettings();
-    await setup();
-    // Warmup for at least 100ms. Discard result.
-    await _measureUntil(settings, run, settings.warmupTime.inMicroseconds);
-    // Run the benchmark for at least 2000ms.
-    final result = await _measureUntil(
-        settings, run, settings.minimumRunTime.inMicroseconds);
-    await teardown();
-    return result;
+    try {
+      await setup();
+      // Warmup for at least 100ms. Discard result.
+      await _measureUntil(settings, run, settings.warmupTime.inMicroseconds);
+      // Run the benchmark for at least 2000ms.
+      final result = await _measureUntil(
+          settings, run, settings.minimumRunTime.inMicroseconds);
+      await teardown();
+      return result;
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 
   /// Runs [fn] for at least [minimumMicroseconds].
