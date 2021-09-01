@@ -37,20 +37,20 @@ A result of running the benchmark would look something like:
 $ dart run example/benchmarking.dart
 
 Map[k]
-          total runs:    8 384
-          total time:   2.0002  s
-         average run:      238 μs
-         runs/second:  4 201.7
-               units:   10 000
-        units/second:  4 201.7
-       time per unit:   0.0238 μs
+          total runs:      8 527
+          total time:     2.0001  s
+         average run:        234 μs
+         runs/second:    4 273.5
+               units:     10 000
+        units/second: 42 735 043
+       time per unit:     0.0234 μs
 
 HashMap[k]
-          total runs:   16 459
-          total time:   2.0000  s
-         average run:      121 μs
-         runs/second:  8 264.5
-               units:   10 000
-        units/second:  8 264.5
-       time per unit:   0.0121 μs
+          total runs:     17 347
+          total time:     2.0000  s
+         average run:        115 μs
+         runs/second:    8 695.7
+               units:     10 000
+        units/second: 86 956 522
+       time per unit:     0.0115 μs
 ```
