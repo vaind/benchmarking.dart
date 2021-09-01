@@ -57,11 +57,14 @@ class BenchmarkResult {
     if (units != null) {
       output
         ..labeled('units', units)
-        ..labeled('units/second', runsPerSecond)
+        ..labeled('units/second', unitsPerSecond(units))
         ..labeled('time per unit',
             Printer.formatMicroseconds(microsecondsPerUnit(units)));
     }
   }
+
+  double unitsPerSecond(int units) =>
+      Duration.microsecondsPerSecond / microsecondsPerUnit(units);
 
   double microsecondsPerUnit(int units) =>
       averageRunTime.inMicroseconds / units;

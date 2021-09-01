@@ -33,7 +33,7 @@ class Printer {
       {String thousandsSeparator = ' ',
       int? decimalPoints,
       String suffix = '   ',
-      int lPadLength = 8}) {
+      int lPadLength = 10}) {
     late String str;
 
     if (number.isInfinite) {
