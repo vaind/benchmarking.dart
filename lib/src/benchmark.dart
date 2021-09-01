@@ -57,7 +57,7 @@ class BenchmarkResult {
     if (units != null) {
       output
         ..labeled('units', units)
-        ..labeled('units/second', runsPerSecond)
+        ..labeled('units/second', runsPerSecond / units)
         ..labeled('time per unit',
             Printer.formatMicroseconds(microsecondsPerUnit(units)));
     }
