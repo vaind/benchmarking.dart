@@ -9,7 +9,7 @@ class Printer {
   void plain(dynamic value) => print(autoTransform(value));
 
   void labeled(String label, dynamic value, {Color color = Color.none}) {
-    label = lpad(label, 20) + ': ';
+    label = '${lpad(label, 20)}: ';
     value = autoTransform(value);
     return color == Color.none
         ? print('$label$value')

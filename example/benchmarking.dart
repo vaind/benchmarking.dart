@@ -34,12 +34,16 @@ void maps() {
   final hashMap = HashMap<int, String>.fromEntries(map.entries);
   final randomizedKeys = numbers.toList()..shuffle();
   String? result; // so that the loop isn't optimized out
-  syncBenchmark('Map[k]',
-          () => randomizedKeys.forEach((index) => result = map[index]))
-      .report(units: numbers.length);
-  syncBenchmark('HashMap[k]',
-          () => randomizedKeys.forEach((index) => result = hashMap[index]))
-      .report(units: numbers.length);
+  syncBenchmark('Map[k]', () {
+    for (final index in randomizedKeys) {
+      result = map[index];
+    }
+  }).report(units: numbers.length);
+  syncBenchmark('HashMap[k]', () {
+    for (final index in randomizedKeys) {
+      result = hashMap[index];
+    }
+  }).report(units: numbers.length);
   assert(result != null);
 }
 
